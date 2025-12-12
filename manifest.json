@@ -1,0 +1,54 @@
+{
+    "id": "app_o0qfivanyc5byedb",
+    "name": "malvin-test-appv2-nest",
+    "version": "v1.0.0",
+    "desc": "malvin-test-appv2-nest",
+    "base_url": "https://malvin690.k3s-dev.myones.net/platform/plugin_relay/app_dispatch/app_o0qfivanyc5byedb",
+    "auth": {
+        "type": "jwt"
+    },
+    "lifecycle_callback": {
+        "install": "/install_cb",
+        "enabled": "/enabled_cb",
+        "disabled": "/disabled_cb",
+        "uninstalled": "/uninstalled_cb"
+    },
+    "extensions": {
+        "manhourValidator": [
+            {
+                "key": "validator1",
+                "funcs": {
+                    "validate": "/manhour/validate"
+                }
+            },
+            {
+                "key": "validator2",
+                "funcs": {
+                    "validate": "/manhour/validate2"
+                }
+            }
+        ],
+        "appSettingPages": [
+            {
+                "key":"settingPage",
+                "funcs": {
+                    "customEntries": "/settingPage/entries"
+                }
+            }
+        ]
+    },
+    "events": {
+        "url": "/events/webhook",
+        "types": [
+            {
+                "eventType": "ones:project:issue:created"
+            },
+            {
+                "eventType": "ones:project:issue:updated"
+            },
+            {
+                "eventType": "ones:project:project:created"
+            }
+        ]
+    }
+}
