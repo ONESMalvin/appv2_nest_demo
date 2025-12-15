@@ -25,10 +25,42 @@ import {
   AuthenticatedRequest,
 } from './dto/install-callback.dto';
 
+interface ManifestConfig {
+  id: string;
+  base_url?: string;
+  [key: string]: unknown;
+}
+
 @Controller()
 export class AppController {
   private eventMap = new Map<string, number>();
   private readonly logger = new Logger(AppController.name);
+
+  // Allow overriding manifest base_url via environment for different ONES hosts
+  private resolveBaseUrl(manifest: ManifestConfig): string {
+    const envBaseUrl = process.env.ONES_BASE_URL;
+    if (envBaseUrl) {
+      return envBaseUrl;
+    }
+
+    const envHost = process.env.ONES_HOST;
+    if (envHost) {
+      const hostWithProtocol = envHost.startsWith('http')
+        ? envHost
+        : `https://${envHost}`;
+
+      return new URL(
+        `/platform/plugin_relay/app_dispatch/${manifest.id}`,
+        hostWithProtocol,
+      ).toString();
+    }
+
+    if (typeof manifest.base_url === 'string') {
+      return manifest.base_url;
+    }
+
+    throw new Error('manifest.base_url is missing');
+  }
 
   constructor(
     private databaseService: DatabaseService,
@@ -40,8 +72,12 @@ export class AppController {
     try {
       const manifestPath = join(process.cwd(), 'manifest.json');
       const manifestData = readFileSync(manifestPath, 'utf8');
+      const manifest = JSON.parse(manifestData) as ManifestConfig;
+
+      manifest.base_url = this.resolveBaseUrl(manifest);
+
       res.setHeader('Content-Type', 'application/json');
-      res.send(manifestData);
+      res.send(JSON.stringify(manifest, null, 2));
     } catch {
       throw new HttpException(
         '无法读取manifest文件',

@@ -9,7 +9,7 @@
     "build": "nest build",
     "build:web": "cd web && npm install && npm run build",
     "build:all": "npm run build && npm run build:web",
-    "dev:local-agent": "ones_appv2_local_agent -s https://malvin690.k3s-dev.myones.net -a app_o0qfivanyc5byedb -t testmyrelaytoken -p 8083",
+    "dev:local-agent": "ones_appv2_local_agent -s ${ONES_HOST:-https://malvin690.k3s-dev.myones.net} -a app_o0qfivanyc5byedb -t ${ONES_RELAY_TOKEN:-testmyrelaytoken} -p ${ONES_AGENT_PORT:-8083} > agent.log 2>&1",
     "dev:web": "cd web && npm run dev",
     "dev:backend": "nest start --watch",
     "dev": "concurrently \"npm run dev:local-agent\" \"npm run dev:backend\" \"npm run dev:web\"",

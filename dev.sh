@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export ONES_HOST=https://p8208-k3s-1.k3s-dev.myones.net
+export ONES_RELAY_TOKEN=testmyrelaytoken
+export ONES_AGENT_PORT=8083
+
 echo "🚀 启动开发环境..."
 
 # 检查是否安装了依赖

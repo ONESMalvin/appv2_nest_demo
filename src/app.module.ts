@@ -10,7 +10,6 @@ import { OpenApiService } from './services/openapi.service';
 import { InstallCallback } from './entities/install-callback.entity';
 import { JWTAuthMiddleware } from './middleware/auth.middleware';
 import { CORSMiddleware } from './middleware/cors.middleware';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
 
 @Module({
   imports: [

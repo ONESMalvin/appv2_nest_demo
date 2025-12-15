@@ -25,6 +25,12 @@
 
 ## 开发环境设置
 
+### 环境变量
+- `ONES_BASE_URL`: 覆盖 manifest 中返回的 `base_url`，直接提供完整地址（如 `https://xxx.myones.net/platform/plugin_relay/app_dispatch/<appId>`）
+- `ONES_HOST`: 只提供域名或含协议的主机地址（如 `https://xxx.myones.net`），由服务端自动拼接 `base_url`
+- `ONES_RELAY_TOKEN`: 覆盖本地代理的 token，默认 `testmyrelaytoken`
+- `ONES_AGENT_PORT`: 覆盖本地代理端口，默认 `8083`
+
 ### 快速启动
 ```bash
 # 一键启动开发环境（推荐）
