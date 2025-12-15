@@ -31,6 +31,14 @@
 - `ONES_RELAY_TOKEN`: 覆盖本地代理的 token，默认 `testmyrelaytoken`
 - `ONES_AGENT_PORT`: 覆盖本地代理端口，默认 `8083`
 
+### AccountThirdparty 测试 Provider
+- manifest 中已声明 `accountThirdparty`，key 为 `testAccount`，入口 `/account/*`
+- `POST /account/loginUrl`：返回拼接 redirect_url 的登录链接（带 `third_party_token`、`org`）
+- `POST /account/authInfo`：根据 `auth_info` 返回模拟用户（id `tp_<auth_info>`）
+- `POST /account/directorySync`：返回固定部门/用户数据
+- `POST /account/messageNotify`：日志记录后返回空对象
+- `POST /account/helpInfo`：返回中英帮助文案；`GET /account/logo` 提供测试 logo
+
 ### 快速启动
 ```bash
 # 一键启动开发环境（推荐）

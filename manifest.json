@@ -35,6 +35,27 @@
                     "customEntries": "/settingPage/entries"
                 }
             }
+        ],
+        "accountThirdparty": [
+            {
+                "key": "testAccount",
+                "funcs": {
+                    "customLoginUrl": "/account/loginUrl",
+                    "authLoginInfo": "/account/authInfo",
+                    "directorySync": "/account/directorySync",
+                    "messageNotify": "/account/messageNotify",
+                    "helpInfo": "/account/helpInfo"
+                },
+                "slots": {
+                    "displayLogo": "/account/logo"
+                },
+                "config": {
+                    "useCustomLoginAuth": true,
+                    "useDirectorySource": true,
+                    "useNotification": true,
+                    "notificationUserIdType": "ONES"
+                }
+            }
         ]
     },
     "events": {
