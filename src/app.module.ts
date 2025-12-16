@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { DatabaseService } from './services/database.service';
 import { AuthService } from './services/auth.service';
 import { OpenApiService } from './services/openapi.service';
+import { AccountThirdpartyService } from './services/account_thirdparty.service';
 import { InstallCallback } from './entities/install-callback.entity';
 import { JWTAuthMiddleware } from './middleware/auth.middleware';
 import { CORSMiddleware } from './middleware/cors.middleware';
@@ -26,7 +27,13 @@ import { CORSMiddleware } from './middleware/cors.middleware';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, DatabaseService, AuthService, OpenApiService],
+  providers: [
+    AppService,
+    DatabaseService,
+    AuthService,
+    OpenApiService,
+    AccountThirdpartyService,
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
