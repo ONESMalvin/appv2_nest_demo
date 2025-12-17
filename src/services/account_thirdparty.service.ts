@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import {
   CustomLoginUrlRequest,
   CustomLoginUrlResponse,
@@ -14,6 +16,12 @@ import {
   HelpInfoResponse,
 } from '../dto/account-extension.dto';
 
+interface ManifestConfig {
+  id: string;
+  base_url?: string;
+  [key: string]: unknown;
+}
+
 @Injectable()
 export class AccountThirdpartyService {
   private readonly logger = new Logger(AccountThirdpartyService.name);
@@ -23,11 +31,26 @@ export class AccountThirdpartyService {
    */
   generateLoginUrl(request: CustomLoginUrlRequest): CustomLoginUrlResponse {
     try {
-      const redirectUrl = new URL(request.redirect_url);
-      redirectUrl.searchParams.set('third_party_token', 'mock-token');
-      redirectUrl.searchParams.set('org', request.org_uuid);
+      /**
+       * 这里返回的是“自定义登录页面”的地址，而不是直接跳回 redirect_url。
+       * 自定义页面打包后会放在插件静态资源里：/static/login.html
+       *
+       * 登录页逻辑：
+       *  - 从查询参数中读取 redirect_url、org_uuid
+       *  - 用户输入名字前缀并点击“登录”
+       *  - 页面把 auth_info=用户输入 的参数附加到 redirect_url 上并跳转
+       *  - 平台随后会调用 /account/authInfo，后端在 getAuthInfo 中完成前缀匹配并返回用户信息
+       */
+      const baseUrl = this.getAppBaseUrl();
+      // 以应用的 base_url 为基础，拼出静态页面地址
+      const loginPageUrl = new URL(join(baseUrl, '/static/login.html'));
+      // 清空原有查询参数，只保留我们需要传递给登录页的参数
+      loginPageUrl.search = '';
+      loginPageUrl.searchParams.set('redirect_url', request.redirect_url);
+      loginPageUrl.searchParams.set('org_uuid', request.org_uuid);
 
-      return { login_url: redirectUrl.toString() };
+      console.log('loginPageUrl', loginPageUrl.toString());
+      return { login_url: loginPageUrl.toString() };
     } catch (error) {
       this.logger.error(
         `生成登录链接失败: ${
@@ -39,18 +62,77 @@ export class AccountThirdpartyService {
   }
 
   /**
+   * 获取应用的 base_url，逻辑与 AppController.resolveBaseUrl 保持一致
+   */
+  private getAppBaseUrl(): string {
+    const manifestPath = join(process.cwd(), 'manifest.json');
+    const manifestData = readFileSync(manifestPath, 'utf8');
+    const manifest = JSON.parse(manifestData) as ManifestConfig;
+
+    const envBaseUrl = process.env.ONES_BASE_URL;
+    if (envBaseUrl) {
+      return envBaseUrl;
+    }
+
+    const envHost = process.env.ONES_HOST;
+    if (envHost) {
+      const hostWithProtocol = envHost.startsWith('http')
+        ? envHost
+        : `https://${envHost}`;
+
+      return new URL(
+        `/platform/plugin_relay/app_dispatch/${manifest.id}`,
+        hostWithProtocol,
+      ).toString();
+    }
+
+    if (typeof manifest.base_url === 'string') {
+      return manifest.base_url;
+    }
+
+    throw new Error('manifest.base_url is missing');
+  }
+
+  /**
    * 获取认证信息
    */
   getAuthInfo(request: AuthLoginInfoRequest): AuthLoginInfoResponse {
+    /**
+     * 约定：
+     *  - login.html 页面会把用户在输入框中输入的“名字前缀”作为 code 传回
+     *  - 这里根据前缀在目录同步返回的 users 中查找匹配的用户
+     *  - 找到则认为认证成功，返回该用户信息；找不到则抛错
+     */
+    console.log('request', request);
+    const requestAuth = JSON.parse(request.auth_info) as { code: string };
+    const prefix = (requestAuth.code || '').trim().toLowerCase();
+    if (!prefix) {
+      throw new Error('code 不能为空');
+    }
+
+    // 复用目录同步里的用户数据，保证账号和目录一致
+    const { users } = this.syncDirectory({ org_uuid: request.org_uuid });
+    const allUsers = Object.values(users);
+
+    const matched = allUsers.find((user) => {
+      const name = (user.name || '').toLowerCase();
+      return name.startsWith(prefix);
+    });
+
+    if (!matched) {
+      throw new Error(`未找到以「${request.auth_info}」为前缀的用户`);
+    }
+
     return {
-      third_party_user_id: `tp_${request.auth_info}`,
-      name: 'Test User',
-      email: 'test.user@example.com',
-      avatar: 'https://avatars.githubusercontent.com/u/0?v=4',
-      phone: '+86 13800000000',
-      title: 'Demo Account',
-      company: 'ThirdParty Inc.',
-      department_ids: ['dept_root'],
+      third_party_user_id: matched.third_party_user_id,
+      name: matched.name,
+      email: matched.email,
+      avatar: matched.avatar,
+      phone: matched.phone,
+      title: matched.title,
+      id_number: matched.id_number,
+      company: matched.company,
+      department_ids: matched.department_ids,
       corp_id: request.org_uuid,
     };
   }
@@ -122,7 +204,7 @@ export class AccountThirdpartyService {
     const language = request.language || 'en';
     const isZh = language.toLowerCase().startsWith('zh');
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     return {
       title: isZh ? '测试账号提供商' : 'Test Account Provider',
       desc: isZh

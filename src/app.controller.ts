@@ -252,6 +252,10 @@ export class AppController {
           title: requestBody.language === 'zh' ? '测试' : 'Test',
           page_url: '/static/page1.html',
         },
+        {
+          title: requestBody.language === 'zh' ? '测试2' : 'Test2',
+          page_url: '/static/page2.html',
+        },
       ],
     };
 
