@@ -60,10 +60,18 @@ export class AccountThirdpartyService {
    */
   syncDirectory(request: DirectorySyncRequest): DirectorySyncResponse {
     const departments: Record<string, DirectoryDepartment> = {
+      // 根部门，id 必须为 "-1"
+      '-1': {
+        third_party_department_id: '-1',
+        name: 'Root Department',
+        parent_id: '0',
+        next_id: '',
+      },
+      // 子部门挂在根部门下
       dept_root: {
         third_party_department_id: 'dept_root',
         name: '研发中心',
-        parent_id: '0',
+        parent_id: '-1',
         next_id: '',
       },
       dept_fe: {
