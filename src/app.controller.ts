@@ -246,16 +246,17 @@ export class AppController {
   handleSettingPageEntries(@Body() requestBody: SettingPageEntryRequest) {
     console.log('请求 /settingPage/entries, header:', requestBody);
 
+    const language = requestBody.language || 'en';
     const returnEntries: SettingPageEntriesResponse = {
       entries: [
         {
-          title: requestBody.language === 'zh' ? '测试' : 'Test',
-          page_url: '/static/page1.html',
+          title: language === 'zh' ? '组织团队信息' : 'Organization Team Info',
+          page_url: '/static/setting_page_1.html',
         },
         {
-          title: requestBody.language === 'zh' ? '测试2' : 'Test2',
-          page_url: '/static/page2.html',
-        },
+          title: language === 'zh' ? 'Web SDK Demo' : 'Web SDK Demo',
+          page_url: '/static/web_sdk_demo.html',
+        }
       ],
     };
 

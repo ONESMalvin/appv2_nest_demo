@@ -3,9 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    page1: './src/pages/page1.js',
     setting_page_1: './src/setting_page_1/index.jsx',
     account_login: './src/login/account_login.jsx',
+    web_sdk_demo: './src/web_sdk_demo/index.jsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -29,19 +29,19 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/pages/page1.html',
-      filename: 'page1.html',
-      chunks: ['page1']
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/pages/page2.html',
-      filename: 'page2.html',
-      chunks: ['setting_page_1']
-    }),
-    new HtmlWebpackPlugin({
       template: './src/pages/login.html',
       filename: 'login.html',
       chunks: ['account_login']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/pages/setting_page_1.html',
+      filename: 'setting_page_1.html',
+      chunks: ['setting_page_1']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/pages/web_sdk_demo.html',
+      filename: 'web_sdk_demo.html',
+      chunks: ['web_sdk_demo']
     })
   ],
   devServer: {

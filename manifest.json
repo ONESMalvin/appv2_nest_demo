@@ -13,6 +13,19 @@
         "disabled": "/disabled_cb",
         "uninstalled": "/uninstalled_cb"
     },
+    "oauth": {
+        "type": ["app", "user"],
+        "scope": [
+            "read:project:issue",
+            "write:project:issue",
+            "read:project:issueStatus",
+            "read:project:issueField",
+            "read:project:project",
+            "read:account:teams",
+            "read:account:user",
+            "write:project:issue-comment"
+        ]
+    },
     "extensions": {
         "manhourValidator": [
             {

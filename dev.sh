@@ -14,8 +14,10 @@ fi
 
 if [ ! -d "web/node_modules" ]; then
     echo "📦 安装前端依赖..."
-    cd web && npm install && cd ..
+    cd web && npm install && npm run build && cd ..
 fi
+
+cd web && npm run build && cd ..
 
 echo "🔥 启动前后端开发服务器..."
 echo "🔥 启动本地代理服务器..."
