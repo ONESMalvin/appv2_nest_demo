@@ -256,7 +256,7 @@ export class AppController {
         {
           title: language === 'zh' ? 'Web SDK Demo' : 'Web SDK Demo',
           page_url: '/static/web_sdk_demo.html',
-        }
+        },
       ],
     };
 
