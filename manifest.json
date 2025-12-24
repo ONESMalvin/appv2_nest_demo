@@ -60,7 +60,7 @@
                     "helpInfo": "/account/helpInfo"
                 },
                 "slots": {
-                    "displayLogo": "/account/logo"
+                    "ones:account:thirdparty:logo": "/account/logo"
                 },
                 "config": {
                     "useCustomLoginAuth": true,
