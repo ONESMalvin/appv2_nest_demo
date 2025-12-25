@@ -46,6 +46,7 @@ export class AccountThirdpartyService {
       const loginPageUrl = new URL(join(baseUrl, '/static/login.html'));
       // 清空原有查询参数，只保留我们需要传递给登录页的参数
       loginPageUrl.search = '';
+      console.log('request:', request);
       loginPageUrl.searchParams.set('redirect_url', request.redirect_url);
       loginPageUrl.searchParams.set('org_uuid', request.org_uuid);
 
@@ -182,6 +183,7 @@ export class AccountThirdpartyService {
         corp_id: request.org_uuid,
       },
     };
+    console.log('data:', { users, departments });
 
     return { users, departments };
   }
@@ -191,7 +193,7 @@ export class AccountThirdpartyService {
    */
   handleMessageNotify(request: MessageNotifyRequest): MessageNotifyResponse {
     this.logger.log(
-      `accountThirdparty messageNotify org=${request.org_uuid}, to=${request.to_users.join(',')}, title=${request.message_data.title}`,
+      `accountThirdparty messageNotify ${JSON.stringify(request)}`
     );
 
     return {};
